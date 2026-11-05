@@ -22,6 +22,7 @@ export default function Join() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [mode, setMode] = useState<'new' | 'resume'>('new')
 
   useEffect(() => {
     let cancelled = false
@@ -48,7 +49,9 @@ export default function Join() {
     setBusy(true)
     try {
       await ensureParticipantAuth()
-      const { error } = await supabase.rpc('join_session', { p_code: code, p_first: first, p_last: last, p_email: email })
+      const { error } = mode === 'resume'
+        ? await supabase.rpc('resume_session', { p_code: code, p_email: email })
+        : await supabase.rpc('join_session', { p_code: code, p_first: first, p_last: last, p_email: email })
       if (error) throw error
       navigate(`/s/${code}/travail`, { replace: true })
     } catch (err) {
@@ -80,20 +83,38 @@ export default function Join() {
     <div className="page narrow">
       <p className="muted small">Séance</p>
       <h1>{info.name}</h1>
+      <div className="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected={mode === 'new'} className={mode === 'new' ? 'tab active' : 'tab'} onClick={() => { setMode('new'); setError('') }}>
+          Première connexion
+        </button>
+        <button type="button" role="tab" aria-selected={mode === 'resume'} className={mode === 'resume' ? 'tab active' : 'tab'} onClick={() => { setMode('resume'); setError('') }}>
+          Déjà inscrit ?
+        </button>
+      </div>
       <form className="card stack" onSubmit={submit}>
-        <label>Prénom<input required value={first} onChange={e => setFirst(e.target.value)} autoComplete="given-name" /></label>
-        <label>Nom<input required value={last} onChange={e => setLast(e.target.value)} autoComplete="family-name" /></label>
-        <label>E-mail<input type="email" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" /></label>
-        <p className="notice small">
-          Vos nom, prénom, e-mail et réponses sont enregistrés pour le suivi de cette formation par le formateur,
-          hébergés en Europe et supprimés au plus tard 6 mois après la séance. Vous pouvez demander leur suppression au formateur.
-        </p>
-        <p className="notice warn small">
-          Vos réponses peuvent être projetées devant le groupe : n'y mettez <strong>aucune donnée client ni information confidentielle</strong>.
-        </p>
+        {mode === 'new' ? (
+          <>
+            <label>Prénom<input required value={first} onChange={e => setFirst(e.target.value)} autoComplete="given-name" /></label>
+            <label>Nom<input required value={last} onChange={e => setLast(e.target.value)} autoComplete="family-name" /></label>
+            <label>E-mail<input type="email" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" /></label>
+            <p className="notice small">
+              Vos nom, prénom, e-mail et réponses sont enregistrés pour le suivi de cette formation par le formateur,
+              hébergés en Europe et supprimés au plus tard 6 mois après la séance. Vous pouvez demander leur suppression au formateur.
+            </p>
+            <p className="notice warn small">
+              Vos réponses peuvent être projetées devant le groupe : n'y mettez <strong>aucune donnée client ni information confidentielle</strong>.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="muted small">Saisissez l'e-mail utilisé lors de votre inscription pour reprendre là où vous en étiez.</p>
+            <label>E-mail<input type="email" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" autoFocus /></label>
+          </>
+        )}
         {error && <p className="error">{error}</p>}
-        <button className="btn btn-primary" disabled={busy}>{busy ? 'Connexion…' : 'Rejoindre la séance'}</button>
-        <p className="muted small">Avec le même e-mail, vous retrouvez votre progression sur un autre appareil.</p>
+        <button className="btn btn-primary" disabled={busy}>
+          {busy ? 'Connexion…' : mode === 'new' ? 'Rejoindre la séance' : 'Reprendre ma séance'}
+        </button>
       </form>
     </div>
   )

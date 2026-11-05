@@ -187,6 +187,27 @@ begin
 end;
 $$;
 
+-- Reprise (après déconnexion ou sur un autre appareil) avec le seul e-mail.
+create or replace function public.resume_session(p_code text, p_email text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare
+  v_session public.sessions;
+  v_id uuid;
+begin
+  if auth.uid() is null then raise exception 'Non connecté'; end if;
+  select * into v_session from public.sessions where access_code = upper(trim(p_code));
+  if not found then raise exception 'Code de session inconnu'; end if;
+  if v_session.status = 'completed' then raise exception 'Cette séance est terminée'; end if;
+  update public.participants set user_id = auth.uid()
+   where session_id = v_session.id and email = lower(trim(p_email))
+  returning id into v_id;
+  if v_id is null then raise exception 'Aucune inscription avec cet e-mail pour cette séance'; end if;
+  return v_id;
+end;
+$$;
+revoke execute on function public.resume_session(text, text) from public, anon;
+grant execute on function public.resume_session(text, text) to authenticated;
+
 -- Clic sur « C'est clair, je démarre ».
 create or replace function public.start_exercise(p_exercise uuid)
 returns void language plpgsql security definer set search_path = public as $$
