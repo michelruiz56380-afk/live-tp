@@ -13,9 +13,10 @@ Outil de rendu de TP en direct pour les formations de Michel Ruiz (Alten). Miche
 ## Architecture
 - React + TS (Vite) → Netlify (`netlify.toml`, `public/_redirects`). Variables : `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (publiques).
 - Supabase : tout le schéma dans `supabase/schema.sql` (idempotent). La sécurité repose sur RLS :
-  formateur = ligne dans `admins` ; participant = connexion anonyme + ligne `participants` (via `join_session`).
+  formateur = ligne dans `admins`, créée par `claim_trainer()` quand un compte à l'e-mail confirmé figure dans `trainer_invites` (géré depuis /admin/formateurs) ; participant = connexion anonyme + ligne `participants` (via `join_session`).
   Toutes les écritures des participants passent par les fonctions SQL (`start_exercise`, `save_response`, `add_response_file`, `remove_response_file`).
 - Stockage : buckets privés `documents/<session>/<exercice>/…` et `responses/<session>/<participant>/<exercice>/…`, URLs signées.
+- Supabase : projet « live tp » (eu-west-1). Netlify : site à relier au dépôt depuis l'interface Netlify.
 - Ne jamais committer de clé `service_role`, de mot de passe ou de `.env`.
 
 ## Vérifier avant de pousser
