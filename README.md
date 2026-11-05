@@ -33,6 +33,8 @@ une par une pour les corriger ensemble. **L'outil n'appelle aucune IA.**
 4. Relancer un déploiement (*Deploys → Trigger deploy*). Renommer le site en `livetp` si le nom est libre (*Site configuration → Change site name*).
 
 ## Adresses
+Site en ligne : **https://livetp.netlify.app** (Netlify, projet `livetp`, republié à chaque mise à jour de `main`).
+
 - `/` : accueil participant (saisie du code, étape 2).
 - `/admin` : espace formateur.
 - `/admin/inscription` : création d'un compte formateur. Seules les adresses autorisées (rubrique « Formateurs » de l'espace formateur) deviennent formateur, après confirmation de leur e-mail.
