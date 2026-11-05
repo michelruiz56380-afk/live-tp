@@ -71,7 +71,8 @@ export default function Sessions() {
                 </div>
               </div>
               <div className="row gap">
-                <Link className="btn" to={`/admin/session/${s.id}`}>Ouvrir</Link>
+                <Link className="btn" to={`/admin/session/${s.id}`}>Préparer</Link>
+                <Link className="btn btn-primary" to={`/admin/session/${s.id}/live`}>{s.status === 'draft' ? 'Lancer' : s.status === 'active' ? 'En direct' : 'Réponses'}</Link>
                 <button className="btn" onClick={() => onDuplicate(s)}>Dupliquer</button>
                 <button className="btn btn-danger-ghost" onClick={() => onDelete(s)}>Supprimer</button>
               </div>

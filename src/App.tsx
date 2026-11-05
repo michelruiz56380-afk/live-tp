@@ -8,6 +8,9 @@ import Home from './pages/Home'
 import Signup from './pages/admin/Signup'
 import NewPassword from './pages/admin/NewPassword'
 import Trainers from './pages/admin/Trainers'
+import Live from './pages/admin/Live'
+import Join from './pages/participant/Join'
+import Work from './pages/participant/Work'
 
 export default function App() {
   if (!isConfigured)
@@ -22,6 +25,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin/connexion" element={<Login />} />
+        <Route path="/s/:code" element={<Join />} />
+        <Route path="/s/:code/travail" element={<Work />} />
+        <Route path="/admin/session/:id/live" element={<RequireAdmin><Live /></RequireAdmin>} />
         <Route path="/admin/inscription" element={<Signup />} />
         <Route path="/admin/mot-de-passe" element={<NewPassword />} />
         <Route path="/admin/formateurs" element={<RequireAdmin><Trainers /></RequireAdmin>} />

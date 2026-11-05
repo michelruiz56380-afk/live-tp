@@ -90,6 +90,9 @@ export default function SessionEdit() {
         </div>
       </div>
       <div className="row gap">
+        <Link className="btn btn-primary" to={`/admin/session/${session.id}/live`}>
+          {session.status === 'draft' ? 'Lancer la séance' : session.status === 'active' ? 'Suivre la séance en direct' : 'Voir les réponses'}
+        </Link>
         <button className="btn" onClick={() => setEditingSession(true)}>Modifier les informations</button>
       </div>
       {error && <p className="error">{error}</p>}
