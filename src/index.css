@@ -46,6 +46,7 @@ code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
 .error { color: var(--danger); margin: 0; }
+.success { color: var(--ok); margin: 0; }
 .preline { white-space: pre-line; margin: 6px 0 0; overflow-wrap: anywhere; }
 .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 

@@ -6,7 +6,7 @@
 
 -- ─── Tables ─────────────────────────────────────────────────────────────────
 
--- Formateurs autorisés (en V1 : un seul, Michel).
+-- Formateurs (rempli par claim_trainer, voir « Comptes formateur »).
 create table if not exists public.admins (
   user_id uuid primary key references auth.users (id) on delete cascade
 );
@@ -264,6 +264,39 @@ begin
 end;
 $$;
 
+-- ─── Comptes formateur ──────────────────────────────────────────────────────
+-- Adresses autorisées à devenir formateur. Une personne qui crée un compte
+-- avec l'une de ces adresses (e-mail confirmé) devient formateur à sa
+-- première connexion. La première adresse s'ajoute depuis le SQL Editor :
+--   insert into public.trainer_invites (email) values ('votre@email.fr');
+
+create table if not exists public.trainer_invites (
+  email text primary key check (email = lower(email)),
+  created_at timestamptz not null default now()
+);
+alter table public.trainer_invites enable row level security;
+drop policy if exists trainer_invites_admin on public.trainer_invites;
+create policy trainer_invites_admin on public.trainer_invites for all using (public.is_admin()) with check (public.is_admin());
+
+create or replace function public.claim_trainer()
+returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_user auth.users;
+begin
+  select * into v_user from auth.users where id = auth.uid();
+  if not found or coalesce(v_user.is_anonymous, false) or v_user.email_confirmed_at is null then
+    return false;
+  end if;
+  if not exists (select 1 from public.trainer_invites where email = lower(v_user.email)) then
+    return false;
+  end if;
+  insert into public.admins (user_id) values (v_user.id) on conflict do nothing;
+  return true;
+end;
+$$;
+revoke execute on function public.claim_trainer() from public, anon;
+grant execute on function public.claim_trainer() to authenticated;
+
 -- Code d'accès à 8 caractères, sans caractères ambigus (0/O, 1/I/L).
 create or replace function public.new_access_code()
 returns text language plpgsql volatile as $$
@@ -331,3 +364,13 @@ create policy livetp_responses_delete on storage.objects for delete using (
   bucket_id = 'responses'
   and public.my_participant_id(((storage.foldername(name))[1])::uuid)::text = (storage.foldername(name))[2]
 );
+
+-- ─── Durcissement (alertes du contrôle de sécurité Supabase) ────────────────
+-- session_by_code reste volontairement accessible sans connexion.
+alter function public.new_access_code() set search_path = public;
+revoke execute on function public.is_admin() from public, anon;
+revoke execute on function public.my_participant_id(uuid) from public, anon;
+revoke execute on function public.new_access_code() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.my_participant_id(uuid) to authenticated;
+grant execute on function public.new_access_code() to authenticated;
