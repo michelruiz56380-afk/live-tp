@@ -94,3 +94,61 @@ textarea { resize: vertical; }
   .code-box { align-items: flex-start; }
   h1 { font-size: 1.35rem; }
 }
+
+/* ─── Étapes 2-3 : participant et séance en direct ─────────────────────── */
+.wide { max-width: 1200px; }
+.tiny { font-size: 0.75rem; }
+.nowrap { white-space: nowrap; }
+.btn-large { min-height: 52px; font-size: 1rem; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-ok { color: var(--ok); }
+.btn-ok.active { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn-warn { color: var(--warn); }
+.btn-warn.active { background: var(--warn); border-color: var(--warn); color: #fff; }
+.badge-warn { background: #fdf0e1; color: var(--warn); }
+.badge + .badge, .muted .badge { margin-left: 6px; }
+
+.code-input { text-align: center; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.notice { background: #eef2ff; border-radius: var(--radius); padding: 10px 12px; margin: 0; font-weight: 400; }
+.notice.warn { background: #fdf0e1; }
+.check { flex-direction: row; align-items: center; gap: 8px; }
+.check input { width: auto; }
+
+.participant-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.waiting { padding: 32px 16px; align-items: center; }
+.pulse { width: 14px; height: 14px; border-radius: 50%; background: var(--primary); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: 1; } }
+.done { border-color: #b7dfc3; }
+.answer { background: var(--bg); border-radius: var(--radius); padding: 12px; overflow-wrap: anywhere; }
+button.chip { cursor: pointer; font: inherit; font-size: 0.85rem; }
+
+.join-panel { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; }
+.names { columns: 2; padding-left: 18px; }
+.qr { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.qr img { width: 260px; height: 260px; image-rendering: pixelated; }
+.qr-url { font-size: 1.2rem; font-weight: 600; margin-top: 6px; }
+.qr-code-label { color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+.qr-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 2.4rem; font-weight: 700; letter-spacing: 0.15em; }
+.qr-full { position: fixed; inset: 0; background: #fff; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; cursor: pointer; }
+.qr-big img { width: min(70vh, 90vw); height: min(70vh, 90vw); }
+.qr-big .qr-url { font-size: 2.2rem; }
+.qr-big .qr-code { font-size: 4.5rem; }
+
+.exercise-nav { margin: 20px 0 10px; }
+.kpis { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); }
+.kpis strong { color: var(--text); font-size: 1.2rem; }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.8rem; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: #fafafb; }
+.table tr.selected { background: #eef2ff; }
+
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(15, 17, 21, 0.35); z-index: 50; display: flex; justify-content: flex-end; }
+.drawer { background: var(--surface); width: min(640px, 100%); height: 100%; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.drawer-actions { position: sticky; bottom: -20px; background: var(--surface); padding: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--border); }
+.media { margin: 0; }
+.media img, .media video { max-width: 100%; max-height: 60vh; border-radius: var(--radius); display: block; background: #000; }
+.media figcaption { margin-top: 4px; font-size: 0.85rem; }

@@ -41,8 +41,8 @@ Site en ligne : **https://livetp.netlify.app** (Netlify, projet `livetp`, republ
 
 ## Avancement
 - [x] Étape 1 : connexion formateur, sessions (créer, modifier, dupliquer, supprimer), exercices et documents de travail.
-- [ ] Étape 2 : côté participant (QR code, inscription, attente, consigne, rendu texte et fichiers).
-- [ ] Étape 3 : tableau de bord en direct, exercice suivant, fin de séance.
+- [x] Étape 2 : côté participant (QR code, inscription, attente, consigne, rendu texte et fichiers).
+- [x] Étape 3 : tableau de bord en direct, exercice suivant, fin de séance.
 - [ ] Étape 4 : mode projection, validation, export CSV.
 - [ ] Étape 5 : répétition générale.
 
