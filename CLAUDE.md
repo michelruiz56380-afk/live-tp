@@ -16,7 +16,7 @@ Outil de rendu de TP en direct pour les formations de Michel Ruiz (Alten). Miche
   formateur = ligne dans `admins`, créée par `claim_trainer()` quand un compte à l'e-mail confirmé figure dans `trainer_invites` (géré depuis /admin/formateurs) ; participant = connexion anonyme + ligne `participants` (via `join_session`).
   Toutes les écritures des participants passent par les fonctions SQL (`start_exercise`, `save_response`, `add_response_file`, `remove_response_file`).
 - Stockage : buckets privés `documents/<session>/<exercice>/…` et `responses/<session>/<participant>/<exercice>/…`, URLs signées.
-- Supabase : projet « live tp » (eu-west-1). Netlify : site à relier au dépôt depuis l'interface Netlify.
+- Supabase : projet « live tp » (eu-west-1). Netlify : site `livetp` (https://livetp.netlify.app), relié à `main`, variables d'environnement déjà configurées.
 - Ne jamais committer de clé `service_role`, de mot de passe ou de `.env`.
 
 ## Vérifier avant de pousser
