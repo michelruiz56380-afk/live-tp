@@ -152,3 +152,24 @@ button.chip { cursor: pointer; font: inherit; font-size: 0.85rem; }
 .media { margin: 0; }
 .media img, .media video { max-width: 100%; max-height: 60vh; border-radius: var(--radius); display: block; background: #000; }
 .media figcaption { margin-top: 4px; font-size: 0.85rem; }
+
+/* ─── Étape 4 : mode projection ─────────────────────────────────────────── */
+.projection { position: fixed; inset: 0; z-index: 70; background: #fff; color: var(--text); display: flex; flex-direction: column; padding: 2vh 2.5vw; gap: 1.5vh; }
+.proj-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; border-bottom: 2px solid var(--border); padding-bottom: 1vh; }
+.proj-exercise { color: var(--muted); font-size: clamp(14px, 1.4vw, 24px); }
+.proj-name { font-size: clamp(26px, 3.4vw, 60px); font-weight: 700; line-height: 1.1; }
+.proj-count { font-size: clamp(16px, 1.6vw, 28px); color: var(--muted); font-variant-numeric: tabular-nums; }
+.proj-body { flex: 1; min-height: 0; display: grid; gap: 2vw; }
+.proj-split { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
+.proj-media-only, .proj-text-only { grid-template-columns: minmax(0, 1fr); }
+.proj-media { min-height: 0; display: flex; flex-direction: column; gap: 1vh; }
+.proj-img, .proj-video, .proj-pdf { flex: 1; min-height: 0; width: 100%; height: 100%; object-fit: contain; background: #f2f3f5; border-radius: 10px; border: none; }
+.proj-text { min-height: 0; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: clamp(18px, 1.9vw, 36px); line-height: 1.45; background: #f7f7f8; border-radius: 10px; padding: 2vh 2vw; }
+.proj-text-only .proj-text { max-width: 1400px; width: 100%; margin: 0 auto; }
+.proj-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.proj-thumb { font: inherit; font-size: 0.9rem; border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 4px 10px; cursor: pointer; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-thumb.active { border-color: var(--primary); color: var(--primary); font-weight: 600; }
+.proj-empty, .proj-loading { color: var(--muted); font-size: clamp(18px, 2vw, 32px); align-self: center; justify-self: center; }
+.proj-other { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; flex: 1; font-size: 1.4rem; }
+.proj-foot { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; border-top: 2px solid var(--border); padding-top: 1vh; }
+@media (max-width: 800px) { .proj-split { grid-template-columns: 1fr; grid-template-rows: 1.4fr 1fr; } }

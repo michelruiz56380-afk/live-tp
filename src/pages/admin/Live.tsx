@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import QRCode from 'qrcode'
 import { errorMessage, supabase } from '../../lib/supabase'
+import { exportSessionCsv } from '../../lib/exportCsv'
+import Projection from './Projection'
 import {
   formatBytes, formatTime, fullName, signedUrl,
   type Exercise, type Participant, type ResponseFile, type ResponseRow, type Session, type Validation,
@@ -24,6 +26,8 @@ export default function Live() {
   const [viewPos, setViewPos] = useState<number | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
   const [qrOpen, setQrOpen] = useState(false)
+  const [projecting, setProjecting] = useState<{ start: string | null } | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   const load = useCallback(async () => {
     const [s, ex, p, r, f] = await Promise.all([
@@ -87,6 +91,16 @@ export default function Live() {
           </p>
         </div>
         <div className="row gap">
+          {session.status !== 'draft' && total > 0 && (
+            <button className="btn" onClick={() => setProjecting({ start: null })}>▶ Projeter les réponses</button>
+          )}
+          {session.status !== 'draft' && (
+            <button className="btn" disabled={exporting} onClick={async () => {
+              setExporting(true)
+              try { await exportSessionCsv(session, exercises, participants, responses, files) } catch (e) { setError(errorMessage(e)) }
+              setExporting(false)
+            }}>{exporting ? 'Export…' : '⬇ Exporter (Excel)'}</button>
+          )}
           {session.status !== 'completed' && <button className="btn" onClick={() => setQrOpen(true)}>Afficher le QR code</button>}
           {session.status === 'draft' && (
             <button className="btn btn-primary" disabled={total === 0} onClick={() => update({ status: 'active', current_position: 1 })}>
@@ -152,7 +166,7 @@ export default function Live() {
           <div className="table-wrap">
             <table className="table">
               <thead>
-                <tr><th>Participant</th><th>Statut</th><th>Démarré</th><th>Rendu</th><th>Contenu</th><th>Validation</th></tr>
+                <tr><th>Participant</th><th>Statut</th><th>Démarré</th><th>Rendu</th><th>Contenu</th><th>Validation</th><th></th></tr>
               </thead>
               <tbody>
                 {participants.map(p => {
@@ -169,10 +183,15 @@ export default function Live() {
                         {n > 0 ? <span title={`${n} fichier(s)`}> 📎{n}</span> : null}
                       </td>
                       <td><ValidationBadge v={r?.validation} /></td>
+                      <td>
+                        {r && (
+                          <button className="btn btn-small" onClick={e => { e.stopPropagation(); setProjecting({ start: p.id }) }}>▶ Projeter</button>
+                        )}
+                      </td>
                     </tr>
                   )
                 })}
-                {participants.length === 0 && <tr><td colSpan={6} className="muted">Aucun participant.</td></tr>}
+                {participants.length === 0 && <tr><td colSpan={7} className="muted">Aucun participant.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -197,6 +216,19 @@ export default function Live() {
             const i = withResp.findIndex(p => p.id === selected)
             if (i >= 0 && i < withResp.length - 1) setSelected(withResp[i + 1].id)
           }}
+        />
+      )}
+
+      {projecting && shown && (
+        <Projection
+          exercise={shown}
+          items={participants.flatMap(p => {
+            const r = respFor(p.id)
+            return r ? [{ participant: p, response: r, files: files.filter(f => f.response_id === r.id) }] : []
+          })}
+          startId={projecting.start}
+          onClose={() => setProjecting(null)}
+          onChange={load}
         />
       )}
 
