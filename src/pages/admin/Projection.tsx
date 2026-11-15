@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { errorMessage, supabase } from '../../lib/supabase'
+import { fileKind } from '../../lib/fileTypes'
+import { officeToHtml } from '../../lib/officePreview'
 import { fullName, signedUrl, type Exercise, type Participant, type ResponseFile, type ResponseRow } from '../../lib/types'
 
 export interface ProjectionItem {
@@ -143,20 +145,49 @@ export default function Projection({ exercise, items, startId, onClose, onChange
 
 function MediaView({ file, url }: { file: ResponseFile; url?: string }) {
   if (!url) return <div className="proj-loading">Chargement…</div>
-  const mime = file.mime_type ?? ''
-  const name = file.file_name.toLowerCase()
-  if (mime.startsWith('image/')) return <img className="proj-img" src={url} alt={file.file_name} />
-  if (mime.startsWith('video/')) return <video className="proj-video" src={url} controls autoPlay />
-  if (mime === 'application/pdf' || name.endsWith('.pdf'))
+  const kind = fileKind(file.file_name, file.mime_type)
+  if (kind === 'image') return <img className="proj-img" src={url} alt={file.file_name} />
+  if (kind === 'video') return <video className="proj-video" src={url} controls autoPlay />
+  if (kind === 'pdf')
     return (
       <>
         <iframe className="proj-pdf" src={url} title={file.file_name} />
         <a className="small" href={url} target="_blank" rel="noopener">Le PDF ne s'affiche pas ? Ouvrir dans un nouvel onglet</a>
       </>
     )
+  if (kind === 'word' || kind === 'excel' || kind === 'text') return <OfficeView file={file} url={url} />
+  return <DownloadOnly file={file} url={url} note="Ce format ne peut pas être affiché directement." />
+}
+
+/** Word / Excel / texte convertis dans le navigateur, affichés dans une iframe sans scripts. */
+function OfficeView({ file, url }: { file: ResponseFile; url: string }) {
+  const [html, setHtml] = useState<string | null | undefined>(undefined)
+  const [failed, setFailed] = useState('')
+  useEffect(() => {
+    let cancelled = false
+    setHtml(undefined)
+    setFailed('')
+    officeToHtml(url, file.file_name, file.mime_type)
+      .then(h => { if (!cancelled) setHtml(h) })
+      .catch(e => { if (!cancelled) setFailed(errorMessage(e)) })
+    return () => { cancelled = true }
+  }, [file.id, url, file.file_name, file.mime_type])
+  if (failed) return <DownloadOnly file={file} url={url} note={`Aperçu impossible : ${failed}`} />
+  if (html === undefined) return <div className="proj-loading">Préparation de l'aperçu…</div>
+  if (html === null) return <DownloadOnly file={file} url={url} note="Ce format ne peut pas être affiché directement." />
+  return (
+    <>
+      <iframe className="proj-pdf proj-office" sandbox="allow-popups" srcDoc={html} title={file.file_name} />
+      <a className="small" href={url} target="_blank" rel="noopener">Télécharger l'original ({file.file_name})</a>
+    </>
+  )
+}
+
+function DownloadOnly({ file, url, note }: { file: ResponseFile; url: string; note: string }) {
   return (
     <div className="proj-other">
       <p>{file.file_name}</p>
+      <p className="muted small">{note}</p>
       <a className="btn btn-primary" href={url} target="_blank" rel="noopener">Ouvrir le fichier</a>
     </div>
   )

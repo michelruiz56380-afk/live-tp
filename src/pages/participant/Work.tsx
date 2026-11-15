@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { errorMessage, supabase } from '../../lib/supabase'
+import { ACCEPTED_FILES, ACCEPTED_LABEL } from '../../lib/fileTypes'
 import {
   formatBytes, fullName, MAX_FILE_BYTES, safeFileName, signedUrl,
   type Exercise, type ExerciseFile, type Participant, type ResponseFile, type ResponseRow, type Session,
@@ -225,11 +226,11 @@ function ExerciseView({ exercise, docs, response, files, participant, onChange }
             <FileList files={files} onOpen={f => openDoc(f.storage_path, 'responses')} onRemove={removeFile} />
             {files.length < MAX_FILES && (
               <label className="btn btn-small">
-                + Ajouter un fichier (image, vidéo, PDF…)
-                <input type="file" multiple hidden disabled={busy} onChange={e => { upload(e.target.files); e.target.value = '' }} />
+                + Ajouter un fichier
+                <input type="file" multiple hidden accept={ACCEPTED_FILES} disabled={busy} onChange={e => { upload(e.target.files); e.target.value = '' }} />
               </label>
             )}
-            <p className="muted small">{MAX_FILES} fichiers au maximum, 50 Mo par fichier.</p>
+            <p className="muted small">Formats : {ACCEPTED_LABEL}. {MAX_FILES} fichiers au maximum, 50 Mo par fichier.</p>
           </div>
           {error && <p className="error">{error}</p>}
           {saved && <p className="success small">{saved}</p>}

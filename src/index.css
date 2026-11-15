@@ -173,3 +173,4 @@ button.chip { cursor: pointer; font: inherit; font-size: 0.85rem; }
 .proj-other { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; flex: 1; font-size: 1.4rem; }
 .proj-foot { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; border-top: 2px solid var(--border); padding-top: 1vh; }
 @media (max-width: 800px) { .proj-split { grid-template-columns: 1fr; grid-template-rows: 1.4fr 1fr; } }
+.proj-office { background: #fff; border: 1px solid var(--border); }
